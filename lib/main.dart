@@ -20,10 +20,8 @@ class StoriesApp extends StatelessWidget {
 }
 
 class StoriesPage extends StatelessWidget {
-  List<Widget> stories;
-
-  StoriesPage() {
-    stories = [1, 2, 3].map((i) {
+  List<Widget> _buildstories() {
+    return [1, 2, 3].map((i) {
       return StoryCard(
         Story(
           id: i.toString(),
@@ -43,6 +41,9 @@ class StoriesPage extends StatelessWidget {
     }).toList();
   }
 
+
+  StoriesPage();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +53,7 @@ class StoriesPage extends StatelessWidget {
       body: SafeArea(
         child: GridView.count(
           crossAxisCount: 2,
-          children: stories,
+          children: _buildstories(),
         ),
       ),
     );
