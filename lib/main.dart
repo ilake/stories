@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import "dart:math";
 
 import "./widgets/story_card.dart";
 import "./models/story.dart";
@@ -10,7 +11,7 @@ class StoriesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Stories',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -20,8 +21,16 @@ class StoriesApp extends StatelessWidget {
 }
 
 class StoriesPage extends StatelessWidget {
+  StoriesPage();
+
+  Random random = Random();
+  List<String> urls = [
+    "https://firebrandtalent.com/wp-content/uploads/career-story.png",
+    "https://i.ytimg.com/vi/TPLSfL5-Y3g/maxresdefault.jpg",
+    "https://cdn-images-1.medium.com/max/2000/1*b1T9PtMK3bxboKvnSctNmg.jpeg"
+  ];
   List<Widget> _buildstories() {
-    return [1, 2, 3].map((i) {
+    return [1, 2, 3, 4, 5, 6, 7].map((i) {
       return StoryCard(
         Story(
           id: i.toString(),
@@ -29,20 +38,21 @@ class StoriesPage extends StatelessWidget {
           pages: [
             Page(
               number: 1,
-              url: "https://cdn-images-1.medium.com/max/2000/1*b1T9PtMK3bxboKvnSctNmg.jpeg",
+              url: urls[random.nextInt(3)],
             ),
             Page(
               number: 2,
-              url: "https://pi.tedcdn.com/r/talkstar-assets.s3.amazonaws.com/production/playlists/playlist_62/how_to_tell_a_story_update_1200x627.jpg",
+              url: urls[random.nextInt(3)],
+            ),
+            Page(
+              number: 3,
+              url: urls[random.nextInt(3)],
             ),
           ],
         ),
       );
     }).toList();
   }
-
-
-  StoriesPage();
 
   @override
   Widget build(BuildContext context) {
