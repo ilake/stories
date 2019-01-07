@@ -32,10 +32,14 @@ class StoryCard extends StatelessWidget {
               return StoryPage(story);
             }));
           },
-          child: CachedNetworkImage(
-            imageUrl: story.coverUrl,
-            placeholder: new CircularProgressIndicator(),
-            errorWidget: new Icon(Icons.error),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18.0),
+            child: CachedNetworkImage(
+              imageUrl: story.coverUrl,
+              placeholder: new CircularProgressIndicator(),
+              errorWidget: new Icon(Icons.error),
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),

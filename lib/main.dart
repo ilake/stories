@@ -62,7 +62,7 @@ class StoriesPage extends StatelessWidget {
       ),
       body: SafeArea(
         child: GridView.count(
-          crossAxisCount: 2,
+          crossAxisCount: 4,
           children: _buildstories(),
         ),
       ),
