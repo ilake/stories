@@ -1,5 +1,6 @@
+import "dart:convert";
 import 'package:flutter/material.dart';
-import "dart:math";
+import "package:http/http.dart" as http;
 
 import "./widgets/story_card.dart";
 import "./models/story.dart";
@@ -20,38 +21,56 @@ class StoriesApp extends StatelessWidget {
   }
 }
 
-class StoriesPage extends StatelessWidget {
-  StoriesPage();
+class StoriesPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _StoriesPageState();
+  }
+}
 
-  Random random = Random();
-  List<String> urls = [
-    "https://firebrandtalent.com/wp-content/uploads/career-story.png",
-    "https://i.ytimg.com/vi/TPLSfL5-Y3g/maxresdefault.jpg",
-    "https://cdn-images-1.medium.com/max/2000/1*b1T9PtMK3bxboKvnSctNmg.jpeg"
-  ];
-  List<Widget> _buildstories() {
-    return [1, 2, 3, 4, 5, 6, 7].map((i) {
-      return StoryCard(
-        Story(
-          id: i.toString(),
-          title: "Title $i",
-          pages: [
-            Page(
-              number: 1,
-              url: urls[random.nextInt(3)],
-            ),
-            Page(
-              number: 2,
-              url: urls[random.nextInt(3)],
-            ),
-            Page(
-              number: 3,
-              url: urls[random.nextInt(3)],
-            ),
-          ],
-        ),
-      );
-    }).toList();
+class _StoriesPageState extends State<StoriesPage> {
+  List<StoryCard> storyCards = [];
+
+  void initState() {
+    super.initState();
+    _fetchStories();
+  }
+
+  Future<void> _fetchStories() async {
+    http.Response response =
+        await http.get("https://stories-4ea69.firebaseio.com/stories.json");
+    final Map<String, dynamic> storiesData = json.decode(response.body);
+
+    List<StoryCard> storyCardList = [];
+
+    storiesData.forEach((String storyId, dynamic storyData) {
+      final List<Page> pageList = storyData["pages"].map<Page>((dynamic page) {
+        return Page(
+          url: page["url"],
+          number: page["number"],
+        );
+      }).toList();
+      pageList.sort((a, b) => a.number.compareTo(b.number));
+
+      final storyCard = StoryCard(Story(
+        id: storyId,
+        public: storyData["public"],
+        position: storyData["position"],
+        title: storyData["title"],
+        pages: pageList,
+      ));
+
+      storyCardList.add(storyCard);
+    });
+
+    storyCardList =
+        storyCardList.where((StoryCard card) => card.story.public).toList();
+
+    storyCardList.sort((a, b) => a.story.position.compareTo(b.story.position));
+
+    setState(() {
+      storyCards = storyCardList;
+    });
   }
 
   @override
@@ -63,7 +82,7 @@ class StoriesPage extends StatelessWidget {
       body: SafeArea(
         child: GridView.count(
           crossAxisCount: 4,
-          children: _buildstories(),
+          children: storyCards,
         ),
       ),
     );
