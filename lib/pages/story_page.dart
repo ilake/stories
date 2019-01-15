@@ -14,10 +14,11 @@ class StoryPage extends StatefulWidget {
   }
 }
 
-class _StoryPageState extends State<StoryPage>
-    with SingleTickerProviderStateMixin {
+class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   bool customAppBarShow = true;
   TabController _tabController;
+  AnimationController _animationController;
+  Animation<Offset> _animation;
 
   @override
   void initState() {
@@ -27,23 +28,48 @@ class _StoryPageState extends State<StoryPage>
       length: widget.story.pages.length,
     );
     _tabController.addListener(_handleTabSelection);
+    _animationController = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _animation = Tween<Offset>(
+      begin: Offset(0, -2),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.fastOutSlowIn,
+    ));
+
+    _animationController.forward();
   }
 
   void _handleTabSelection() {
-    setState(() {
-      customAppBarShow = _tabController.index == widget.story.pages.length - 1;
-    });
+    if (_tabController.index == widget.story.pages.length - 1) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
   }
 
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
-      child: AppBar(
-        title: Text(
-          widget.story.title,
-        ),
-        backgroundColor: Colors.black45,
-      ),
       height: 60,
+      child: FadeTransition(
+        opacity: CurvedAnimation(
+          parent: _animationController,
+          curve: Curves.easeInOut,
+        ),
+        child: SlideTransition(
+          position: _animation,
+          child: AppBar(
+            title: Text(
+              widget.story.title,
+            ),
+            backgroundColor: Colors.black45,
+          ),
+        ),
+      ),
     );
   }
 
@@ -64,14 +90,16 @@ class _StoryPageState extends State<StoryPage>
       (Page page) {
         return GestureDetector(
           onTap: () {
-            setState(() {
-              customAppBarShow = !customAppBarShow;
-            });
+            if (_animationController.isDismissed) {
+              _animationController.forward();
+            } else {
+              _animationController.reverse();
+            }
           },
           child: Stack(
             children: <Widget>[
               _fullScreenImage(page),
-              customAppBarShow ? _buildCustomAppBar(context) : Container(),
+              _buildCustomAppBar(context),
             ],
           ),
         );
