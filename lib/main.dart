@@ -4,8 +4,11 @@ import "package:http/http.dart" as http;
 
 import "./widgets/story_card.dart";
 import "./models/story.dart";
+import "./pages/story_page.dart";
 
 void main() => runApp(StoriesApp());
+
+List<Story> storyList = [];
 
 class StoriesApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -16,7 +19,25 @@ class StoriesApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: StoriesPage(),
+      routes: <String, WidgetBuilder>{
+        "/": (BuildContext context) => StoriesPage(),
+      },
+      onGenerateRoute: (RouteSettings settings) {
+        final List<String> pathElements = settings.name.split("/");
+
+        if (pathElements[0] != "") {
+          return null;
+        }
+
+        if (pathElements[1] == "story") {
+          final String storyId = pathElements[2];
+          final Story story =
+              storyList.firstWhere((Story _story) => _story.id == storyId);
+          return MaterialPageRoute(builder: (BuildContext context) {
+            return StoryPage(story);
+          });
+        }
+      },
     );
   }
 }
@@ -51,16 +72,17 @@ class _StoriesPageState extends State<StoriesPage> {
         );
       }).toList();
       pageList.sort((a, b) => a.number.compareTo(b.number));
-
-      final storyCard = StoryCard(Story(
+      final Story story = Story(
         id: storyId,
         public: storyData["public"],
         position: storyData["position"],
         title: storyData["title"],
         pages: pageList,
-      ));
+      );
+      final storyCard = StoryCard(story);
 
       storyCardList.add(storyCard);
+      storyList.add(story);
     });
 
     storyCardList =

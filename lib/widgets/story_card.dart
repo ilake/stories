@@ -27,10 +27,7 @@ class StoryCard extends StatelessWidget {
         ),
         child: GestureDetector(
           onTap: () {
-            Navigator.of(context)
-                .push(MaterialPageRoute(builder: (BuildContext context) {
-              return StoryPage(story);
-            }));
+            Navigator.pushNamed(context, "/story/" + story.id);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(18.0),
