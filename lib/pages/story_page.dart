@@ -18,7 +18,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   bool customAppBarShow = true;
   TabController _tabController;
   AnimationController _animationController;
-  Animation<Offset> _animation;
+  Animation<double> _animation;
 
   @override
   void initState() {
@@ -33,13 +33,12 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    _animation = Tween<Offset>(
-      begin: Offset(0, -2),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.fastOutSlowIn,
-    ));
+    // By default, the AnimationController object ranges from 0.0 to 1.0.
+    _animation = _animationController.drive(
+      CurveTween(
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
 
     _animationController.forward();
   }
@@ -55,28 +54,16 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
       height: 60,
-      child: FadeTransition(
-        opacity: CurvedAnimation(
-          parent: _animationController,
-          curve: Curves.easeInOut,
-        ),
-        child: SlideTransition(
-          position: _animation,
-          child: AppBar(
-            title: Text(
-              widget.story.title,
-            ),
-            backgroundColor: Colors.black45,
-          ),
-        ),
-      ),
+      child: AnimatedAppbar(animation: _animation, title: widget.story.title),
     );
   }
 
   Widget _fullScreenImage(Page page) {
     return CachedNetworkImage(
       imageUrl: page.url,
-      placeholder: CircularProgressIndicator(),
+      placeholder: Center(
+        child: CircularProgressIndicator(),
+      ),
       errorWidget: Icon(Icons.error),
       fit: BoxFit.contain,
       height: double.infinity,
@@ -113,6 +100,50 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: _buildPages(context),
+      ),
+    );
+  }
+}
+
+class FadeSliderTransition extends StatelessWidget {
+  final Widget child;
+  final Animation<double> animation;
+
+  FadeSliderTransition({this.child, this.animation});
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: animation,
+      child: SlideTransition(
+        position: animation.drive(
+          Tween<Offset>(
+            begin: const Offset(0, -1), // Slightly down.
+            end: Offset.zero,
+          ),
+        ),
+        child: child,
+      ),
+    );
+  }
+}
+
+class AnimatedAppbar extends AnimatedWidget {
+  final String title;
+
+  AnimatedAppbar({Key key, Animation<double> animation, this.title})
+      : super(key: key, listenable: animation);
+
+  Widget build(BuildContext context) {
+    final Animation<double> animation = listenable;
+
+    return FadeSliderTransition(
+      animation: animation,
+      child: AppBar(
+        title: Text(
+          title,
+        ),
+        backgroundColor: Colors.black45,
       ),
     );
   }
