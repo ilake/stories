@@ -102,9 +102,17 @@ class _StoriesPageState extends State<StoriesPage> {
         title: Text("Stories"),
       ),
       body: SafeArea(
-        child: GridView.count(
-          crossAxisCount: 4,
-          children: storyCards,
+        child: GridView.builder(
+          itemCount: storyCards.length,
+          itemBuilder: (BuildContext context, int index) {
+            return storyCards[index];
+          },
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 4,
+            mainAxisSpacing: 2.0,
+            crossAxisSpacing: 2.0,
+            childAspectRatio: 1.2,
+          ),
         ),
       ),
     );
