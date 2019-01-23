@@ -77,7 +77,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
         child: CircularProgressIndicator(),
       ),
       errorWidget: Icon(Icons.error),
-      fit: isFullScreen ? BoxFit.fitHeight : BoxFit.contain,
+      fit: isFullScreen ? BoxFit.cover : BoxFit.contain,
       width: double.infinity,
       height: double.infinity,
       alignment: Alignment.center,
