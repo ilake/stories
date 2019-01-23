@@ -19,6 +19,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   TabController _tabController;
   AnimationController _animationController;
   Animation<double> _animation;
+  bool isFullScreen = false;
 
   @override
   void initState() {
@@ -51,10 +52,21 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
     }
   }
 
+  void _toggleFullScreen() {
+    setState(() {
+      isFullScreen = !isFullScreen;
+    });
+  }
+
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
       height: 60,
-      child: AnimatedAppbar(animation: _animation, title: widget.story.title),
+      child: AnimatedAppbar(
+        animation: _animation,
+        story: widget.story,
+        toggleFullScreen: _toggleFullScreen,
+        isFullScreen: isFullScreen,
+      ),
     );
   }
 
@@ -65,9 +77,9 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
         child: CircularProgressIndicator(),
       ),
       errorWidget: Icon(Icons.error),
-      fit: BoxFit.contain,
-      height: double.infinity,
+      fit: isFullScreen ? BoxFit.fitHeight : BoxFit.contain,
       width: double.infinity,
+      height: double.infinity,
       alignment: Alignment.center,
     );
   }
@@ -129,9 +141,16 @@ class FadeSliderTransition extends StatelessWidget {
 }
 
 class AnimatedAppbar extends AnimatedWidget {
-  final String title;
+  final Story story;
+  final Function toggleFullScreen;
+  final bool isFullScreen;
 
-  AnimatedAppbar({Key key, Animation<double> animation, this.title})
+  AnimatedAppbar(
+      {Key key,
+      Animation<double> animation,
+      this.story,
+      this.toggleFullScreen,
+      this.isFullScreen})
       : super(key: key, listenable: animation);
 
   Widget build(BuildContext context) {
@@ -141,8 +160,14 @@ class AnimatedAppbar extends AnimatedWidget {
       animation: animation,
       child: AppBar(
         title: Text(
-          title,
+          story.title,
         ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
+            onPressed: toggleFullScreen,
+          ),
+        ],
         backgroundColor: Colors.black45,
       ),
     );

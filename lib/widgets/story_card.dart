@@ -1,7 +1,6 @@
 import "package:flutter/material.dart";
 import 'package:cached_network_image/cached_network_image.dart';
 
-import "../pages/story_page.dart";
 import "../models/story.dart";
 
 class StoryCard extends StatelessWidget {
