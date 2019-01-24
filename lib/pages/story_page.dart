@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import 'package:cached_network_image/cached_network_image.dart';
 
 import "../models/story.dart";
+import "../helpers/image_animator.dart";
 
 class StoryPage extends StatefulWidget {
   final Story story;
@@ -18,8 +19,10 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   bool customAppBarShow = true;
   TabController _tabController;
   AnimationController _animationController;
+  AnimationController _fullscreenController;
   Animation<double> _animation;
   bool isFullScreen = false;
+  GlobalKey imageKey = GlobalKey();
 
   @override
   void initState() {
@@ -30,6 +33,10 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
     );
     _tabController.addListener(_handleTabSelection);
     _animationController = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+    _fullscreenController = AnimationController(
       duration: Duration(milliseconds: 400),
       vsync: this,
     );
@@ -53,6 +60,13 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   void _toggleFullScreen() {
+    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
+    // print("SIZE of Red: ${renderBox.size}");
+    if (_fullscreenController.isDismissed) {
+      _fullscreenController.forward();
+    } else {
+      _fullscreenController.reverse();
+    }
     setState(() {
       isFullScreen = !isFullScreen;
     });
@@ -71,17 +85,62 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   Widget _fullScreenImage(Page page) {
-    return CachedNetworkImage(
-      imageUrl: page.url,
-      placeholder: Center(
-        child: CircularProgressIndicator(),
+    // final LimitedBox box = LimitedBox(
+    //     child: Container(
+    //         key: imageKey,
+    //         decoration: BoxDecoration(
+    //             image: DecorationImage(image: NetworkImage(page.url)))));
+
+    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
+    // print("SIZE of Red: ${renderBox.size}");
+    // Try to get container size
+    // Image image = Image.network(page.url);
+    // Image limage = Image(image: AssetImage("assets/aruru1.png").resolve());
+    // NetworkImage nimage = NetworkImage(page.url);
+    // ImageInfo img = ImageInfo(image: );
+
+    // Image.asset("assets/aruru1.png")
+    //     .image
+    //     .resolve(createLocalImageConfiguration(context))
+    //     .addListener((ImageInfo image, bool synchronousCall) {
+    //       print(image);
+    //     });
+    // Size outputSize;
+    // NetworkImage(page.url)
+    //     .resolve(createLocalImageConfiguration(context))
+    //     .addListener((ImageInfo image, bool synchronousCall) {
+    //   print(image);
+    //   Size imageSize =
+    //       Size(image.image.width.toDouble(), image.image.height.toDouble());
+
+    //   FittedSizes beginFS =
+    //       applyBoxFit(BoxFit.contain, imageSize, MediaQuery.of(context).size);
+    //   print(beginFS.destination);
+    // });
+    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
+    // print("SIZE of Red: ${renderBox.size}");
+    return ImageAnimator(
+      child: Container(
+        width: double.infinity,
+        height: double.infinity,
       ),
-      errorWidget: Icon(Icons.error),
-      fit: isFullScreen ? BoxFit.cover : BoxFit.contain,
-      width: double.infinity,
-      height: double.infinity,
-      alignment: Alignment.center,
+      controller: _fullscreenController,
+      imageProvider: CachedNetworkImageProvider("https://placekitten.com/g/200/300"),
+      beginFit: BoxFit.contain,
+      endFit: BoxFit.cover,
     );
+
+    // return CachedNetworkImage(
+    //   imageUrl: page.url,
+    //   placeholder: Center(
+    //     child: CircularProgressIndicator(),
+    //   ),
+    //   errorWidget: Icon(Icons.error),
+    //   fit: isFullScreen ? BoxFit.cover : BoxFit.contain,
+    //   width: double.infinity,
+    //   height: double.infinity,
+    //   alignment: Alignment.center,
+    // );
   }
 
   List<Widget> _buildPages(BuildContext context) {
