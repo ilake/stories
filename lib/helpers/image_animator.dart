@@ -8,40 +8,76 @@ class MyCustomPainter extends CustomPainter {
   BoxFit beginFit;
   BoxFit endFit;
   Animation anim;
-  Animation<ui.Rect> srcAnim;
   Animation<ui.Rect> dstAnim;
+  Rect imageRect;
 
   MyCustomPainter(this.anim, this.image, this.beginFit, this.endFit)
       : super(repaint: anim);
 
   @override
   void paint(Canvas canvas, Size size) {
+    Rect viewRect = Offset.zero & size;
+
     if (size != this.size && image != null) {
       print('new size $size');
       this.size = size;
 
-      Size imageSize = Size(image.width.toDouble(), image.height.toDouble());
-      FittedSizes beginFS = applyBoxFit(beginFit, imageSize, size);
-      FittedSizes endFS = applyBoxFit(endFit, imageSize, size);
+      imageRect =
+          Rect.fromLTRB(0, 0, image.width.toDouble(), image.height.toDouble());
+      Size beginS = applyBoxFit(beginFit, imageRect.size, size);
+      Size endS = applyBoxFit(endFit, imageRect.size, size);
 
-      Rect imageRect = Offset.zero & imageSize;
-      srcAnim = anim.drive(RectTween(
-        begin: Alignment.center.inscribe(beginFS.source, imageRect),
-        end: Alignment.center.inscribe(endFS.source, imageRect),
-      ));
-      Rect viewRect = Offset.zero & size;
-      dstAnim = anim.drive(RectTween(
-        begin: Alignment.center.inscribe(beginFS.destination, viewRect),
-        end: Alignment.center.inscribe(endFS.destination, viewRect),
-      ));
+      dstAnim = RectTween(
+        begin: Alignment.center.inscribe(beginS, viewRect),
+        end: Alignment.center.inscribe(endS, viewRect),
+      ).animate(anim);
     }
     if (image != null) {
-      canvas.drawImageRect(image, srcAnim.value, dstAnim.value, p);
+      // if (debugPaintSizeEnabled) {
+      //   p.style = ui.PaintingStyle.stroke;
+      //   p.color = Colors.red;
+      //   canvas.drawRect(dstAnim.value, p);
+      // }
+      canvas.clipRect(viewRect);
+      canvas.drawImageRect(image, imageRect, dstAnim.value, p);
     }
   }
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
+
+  Size applyBoxFit(BoxFit fit, Size inSize, Size outSize) {
+    final double inSizeAspectRatio = inSize.width / inSize.height;
+    final double outSizeAspectRatio = outSize.width / outSize.height;
+
+    switch (fit) {
+      case BoxFit.fill:
+        return Size.copy(outSize);
+      case BoxFit.contain:
+        if (outSizeAspectRatio > inSizeAspectRatio)
+          return Size(outSize.height * inSizeAspectRatio, outSize.height);
+        return Size(outSize.width, outSize.width / inSizeAspectRatio);
+      case BoxFit.cover:
+        if (outSizeAspectRatio > inSizeAspectRatio)
+          return Size(outSize.width, outSize.width / inSizeAspectRatio);
+        return Size(outSize.height * inSizeAspectRatio, outSize.height);
+      case BoxFit.fitWidth:
+        return Size(outSize.width, outSize.width / inSizeAspectRatio);
+      case BoxFit.fitHeight:
+        return Size(outSize.height * inSizeAspectRatio, outSize.height);
+      case BoxFit.none:
+        return Size.copy(inSize);
+      case BoxFit.scaleDown:
+        // TODO i'm not sure about the implementation...
+        if (inSize < outSize) return Size.copy(inSize);
+        if (outSizeAspectRatio > inSizeAspectRatio)
+          return Size(outSize.height * inSizeAspectRatio, outSize.height);
+        return Size(outSize.width, outSize.width / inSizeAspectRatio);
+
+      
+    }
+     return Size.copy(outSize);
+  }
 }
 
 class ImageAnimator extends StatefulWidget {

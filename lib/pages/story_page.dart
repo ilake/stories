@@ -125,7 +125,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
         height: double.infinity,
       ),
       controller: _fullscreenController,
-      imageProvider: CachedNetworkImageProvider("https://placekitten.com/g/200/300"),
+      imageProvider: CachedNetworkImageProvider(page.url),
       beginFit: BoxFit.contain,
       endFit: BoxFit.cover,
     );
