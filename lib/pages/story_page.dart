@@ -74,7 +74,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
 
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
-      height: 60,
+      height: 75,
       child: AnimatedAppbar(
         animation: _animation,
         story: widget.story,
