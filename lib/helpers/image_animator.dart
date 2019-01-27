@@ -46,37 +46,24 @@ class MyCustomPainter extends CustomPainter {
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
 
-  Size applyBoxFit(BoxFit fit, Size inSize, Size outSize) {
-    final double inSizeAspectRatio = inSize.width / inSize.height;
-    final double outSizeAspectRatio = outSize.width / outSize.height;
-
-    switch (fit) {
-      case BoxFit.fill:
-        return Size.copy(outSize);
-      case BoxFit.contain:
-        if (outSizeAspectRatio > inSizeAspectRatio)
-          return Size(outSize.height * inSizeAspectRatio, outSize.height);
-        return Size(outSize.width, outSize.width / inSizeAspectRatio);
-      case BoxFit.cover:
-        if (outSizeAspectRatio > inSizeAspectRatio)
-          return Size(outSize.width, outSize.width / inSizeAspectRatio);
-        return Size(outSize.height * inSizeAspectRatio, outSize.height);
-      case BoxFit.fitWidth:
-        return Size(outSize.width, outSize.width / inSizeAspectRatio);
-      case BoxFit.fitHeight:
-        return Size(outSize.height * inSizeAspectRatio, outSize.height);
-      case BoxFit.none:
-        return Size.copy(inSize);
-      case BoxFit.scaleDown:
-        // TODO i'm not sure about the implementation...
-        if (inSize < outSize) return Size.copy(inSize);
-        if (outSizeAspectRatio > inSizeAspectRatio)
-          return Size(outSize.height * inSizeAspectRatio, outSize.height);
-        return Size(outSize.width, outSize.width / inSizeAspectRatio);
-
-      
+  Size applyBoxFit(BoxFit fit, Size ins, Size outs) {
+    if (fit == BoxFit.fill) return Size.copy(outs);
+    if (fit == BoxFit.none || (fit == BoxFit.scaleDown && ins < outs))
+      return Size.copy(ins);
+    if (fit == BoxFit.contain || fit == BoxFit.scaleDown) {
+      if (outs.aspectRatio > ins.aspectRatio)
+        return ins * (outs.height / ins.height);
+      return ins * (outs.width / ins.width);
     }
-     return Size.copy(outSize);
+    if (fit == BoxFit.cover) {
+      if (outs.aspectRatio > ins.aspectRatio)
+        return ins * (outs.width / ins.width);
+      return ins * (outs.height / ins.height);
+    }
+    if (fit == BoxFit.fitWidth) return ins * (outs.width / ins.width);
+    if (fit == BoxFit.fitHeight) return ins * (outs.height / ins.height);
+    
+    return Size.copy(outs);
   }
 }
 
