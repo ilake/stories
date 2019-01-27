@@ -142,6 +142,12 @@ class _ImageAnimatorState extends State<ImageAnimator>
 
   @override
   Widget build(BuildContext context) {
+    if (_imageInfo == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
     return CustomPaint(
       painter: MyCustomPainter(
           widget.controller, _imageInfo?.image, widget.beginFit, widget.endFit),
