@@ -96,6 +96,16 @@ class _ImageAnimatorState extends State<ImageAnimator>
     with SingleTickerProviderStateMixin {
   ImageStream _imageStream;
   ImageInfo _imageInfo;
+  AnimationController fadeController;
+
+  @override
+  void initState() {
+    super.initState();
+    fadeController = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+  }
 
   @override
   void didChangeDependencies() {
@@ -147,11 +157,18 @@ class _ImageAnimatorState extends State<ImageAnimator>
         child: CircularProgressIndicator(),
       );
     }
+    fadeController.forward();
 
-    return CustomPaint(
-      painter: MyCustomPainter(
-          widget.controller, _imageInfo?.image, widget.beginFit, widget.endFit),
-      child: widget.child,
+    return FadeTransition(
+      opacity: CurvedAnimation(
+        curve: Curves.fastOutSlowIn,
+        parent: fadeController,
+      ),
+      child: CustomPaint(
+        painter: MyCustomPainter(widget.controller, _imageInfo?.image,
+            widget.beginFit, widget.endFit),
+        child: widget.child,
+      ),
     );
   }
 }
