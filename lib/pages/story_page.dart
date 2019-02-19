@@ -36,11 +36,8 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
     );
 
     // By default, the _fadeSliderController object ranges from 0.0 to 1.0.
-    _fadeSliderAnimation = _fadeSliderController.drive(
-      CurveTween(
-        curve: Curves.fastOutSlowIn,
-      ),
-    );
+    _fadeSliderAnimation = CurvedAnimation(
+        parent: _fadeSliderController, curve: Curves.fastOutSlowIn);
 
     _fullscreenController = AnimationController(
       duration: Duration(milliseconds: 400),
@@ -138,20 +135,18 @@ class FadeSliderTransition extends StatelessWidget {
   }
 }
 
-class AnimatedAppbar extends AnimatedWidget {
+class AnimatedAppbar extends StatelessWidget {
   final Story story;
+  final Animation fadeSliderAnimation;
   final AnimationController fullscreenController;
 
   AnimatedAppbar({
-    Key key,
-    Animation<double> fadeSliderAnimation,
+    this.fadeSliderAnimation,
     this.fullscreenController,
     this.story,
-  }) : super(key: key, listenable: fadeSliderAnimation);
+  });
 
   Widget build(BuildContext context) {
-    final Animation<double> fadeSliderAnimation = listenable;
-
     return FadeSliderTransition(
       animation: fadeSliderAnimation,
       child: AppBar(
