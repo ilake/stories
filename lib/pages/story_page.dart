@@ -90,6 +90,13 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
               _fadeSliderController.reverse();
             }
           },
+          onScaleEnd: (ScaleEndDetails details) {
+            if (_fullscreenController.isDismissed) {
+              _fullscreenController.forward();
+            } else {
+              _fullscreenController.reverse();
+            }
+          },
           child: Stack(
             children: <Widget>[
               _fullScreenImage(page),
