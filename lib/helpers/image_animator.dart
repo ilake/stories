@@ -16,6 +16,8 @@ class MyCustomPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // The CustomPaint child size
+    // Magic, it is how to get the Rect from Size
     Rect viewRect = Offset.zero & size;
 
     if (size != this.size && image != null) {
@@ -34,11 +36,13 @@ class MyCustomPainter extends CustomPainter {
     }
     if (image != null) {
       // if (debugPaintSizeEnabled) {
-      //   p.style = ui.PaintingStyle.stroke;
-      //   p.color = Colors.red;
-      //   canvas.drawRect(dstAnim.value, p);
+        // p.style = ui.PaintingStyle.stroke;
+        // p.color = Colors.red;
+        // canvas.drawRect(dstAnim.value, p);
       // }
+
       canvas.clipRect(viewRect);
+      print('dstAnim.value ${dstAnim.value}');
       canvas.drawImageRect(image, imageRect, dstAnim.value, p);
     }
   }
@@ -62,7 +66,7 @@ class MyCustomPainter extends CustomPainter {
     }
     if (fit == BoxFit.fitWidth) return ins * (outs.width / ins.width);
     if (fit == BoxFit.fitHeight) return ins * (outs.height / ins.height);
-    
+
     return Size.copy(outs);
   }
 }

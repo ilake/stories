@@ -85,40 +85,6 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   Widget _fullScreenImage(Page page) {
-    // final LimitedBox box = LimitedBox(
-    //     child: Container(
-    //         key: imageKey,
-    //         decoration: BoxDecoration(
-    //             image: DecorationImage(image: NetworkImage(page.url)))));
-
-    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
-    // print("SIZE of Red: ${renderBox.size}");
-    // Try to get container size
-    // Image image = Image.network(page.url);
-    // Image limage = Image(image: AssetImage("assets/aruru1.png").resolve());
-    // NetworkImage nimage = NetworkImage(page.url);
-    // ImageInfo img = ImageInfo(image: );
-
-    // Image.asset("assets/aruru1.png")
-    //     .image
-    //     .resolve(createLocalImageConfiguration(context))
-    //     .addListener((ImageInfo image, bool synchronousCall) {
-    //       print(image);
-    //     });
-    // Size outputSize;
-    // NetworkImage(page.url)
-    //     .resolve(createLocalImageConfiguration(context))
-    //     .addListener((ImageInfo image, bool synchronousCall) {
-    //   print(image);
-    //   Size imageSize =
-    //       Size(image.image.width.toDouble(), image.image.height.toDouble());
-
-    //   FittedSizes beginFS =
-    //       applyBoxFit(BoxFit.contain, imageSize, MediaQuery.of(context).size);
-    //   print(beginFS.destination);
-    // });
-    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
-    // print("SIZE of Red: ${renderBox.size}");
     return ImageAnimator(
       child: Container(
         width: double.infinity,
