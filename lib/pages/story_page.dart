@@ -16,70 +16,55 @@ class StoryPage extends StatefulWidget {
 }
 
 class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
-  bool customAppBarShow = true;
   TabController _tabController;
-  AnimationController _animationController;
+  AnimationController _fadeSliderController;
   AnimationController _fullscreenController;
-  Animation<double> _animation;
-  bool isFullScreen = false;
-  GlobalKey imageKey = GlobalKey();
+  Animation<double> _fadeSliderAnimation;
 
   @override
   void initState() {
     super.initState();
+
     _tabController = TabController(
       vsync: this,
       length: widget.story.pages.length,
-    );
-    _tabController.addListener(_handleTabSelection);
-    _animationController = AnimationController(
-      duration: Duration(milliseconds: 400),
-      vsync: this,
-    );
-    _fullscreenController = AnimationController(
+    )..addListener(_handleTabSelection);
+
+    _fadeSliderController = AnimationController(
       duration: Duration(milliseconds: 400),
       vsync: this,
     );
 
-    // By default, the AnimationController object ranges from 0.0 to 1.0.
-    _animation = _animationController.drive(
+    // By default, the _fadeSliderController object ranges from 0.0 to 1.0.
+    _fadeSliderAnimation = _fadeSliderController.drive(
       CurveTween(
         curve: Curves.fastOutSlowIn,
       ),
     );
 
-    _animationController.forward();
+    _fullscreenController = AnimationController(
+      duration: Duration(milliseconds: 400),
+      vsync: this,
+    );
+
+    _fadeSliderController.forward();
   }
 
   void _handleTabSelection() {
     if (_tabController.index == widget.story.pages.length - 1) {
-      _animationController.forward();
+      _fadeSliderController.forward();
     } else {
-      _animationController.reverse();
+      _fadeSliderController.reverse();
     }
-  }
-
-  void _toggleFullScreen() {
-    // final RenderBox renderBox = imageKey.currentContext.findRenderObject();
-    // print("SIZE of Red: ${renderBox.size}");
-    if (_fullscreenController.isDismissed) {
-      _fullscreenController.forward();
-    } else {
-      _fullscreenController.reverse();
-    }
-    setState(() {
-      isFullScreen = !isFullScreen;
-    });
   }
 
   Widget _buildCustomAppBar(BuildContext context) {
     return Container(
-      height: 75,
+      height: 85,
       child: AnimatedAppbar(
-        animation: _animation,
+        fadeSliderAnimation: _fadeSliderAnimation,
+        fullscreenController: _fullscreenController,
         story: widget.story,
-        toggleFullScreen: _toggleFullScreen,
-        isFullScreen: isFullScreen,
       ),
     );
   }
@@ -95,18 +80,6 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
       beginFit: BoxFit.contain,
       endFit: BoxFit.cover,
     );
-
-    // return CachedNetworkImage(
-    //   imageUrl: page.url,
-    //   placeholder: Center(
-    //     child: CircularProgressIndicator(),
-    //   ),
-    //   errorWidget: Icon(Icons.error),
-    //   fit: isFullScreen ? BoxFit.cover : BoxFit.contain,
-    //   width: double.infinity,
-    //   height: double.infinity,
-    //   alignment: Alignment.center,
-    // );
   }
 
   List<Widget> _buildPages(BuildContext context) {
@@ -114,10 +87,10 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
       (Page page) {
         return GestureDetector(
           onTap: () {
-            if (_animationController.isDismissed) {
-              _animationController.forward();
+            if (_fadeSliderController.isDismissed) {
+              _fadeSliderController.forward();
             } else {
-              _animationController.reverse();
+              _fadeSliderController.reverse();
             }
           },
           child: Stack(
@@ -167,30 +140,41 @@ class FadeSliderTransition extends StatelessWidget {
 
 class AnimatedAppbar extends AnimatedWidget {
   final Story story;
-  final Function toggleFullScreen;
-  final bool isFullScreen;
+  final AnimationController fullscreenController;
 
-  AnimatedAppbar(
-      {Key key,
-      Animation<double> animation,
-      this.story,
-      this.toggleFullScreen,
-      this.isFullScreen})
-      : super(key: key, listenable: animation);
+  AnimatedAppbar({
+    Key key,
+    Animation<double> fadeSliderAnimation,
+    this.fullscreenController,
+    this.story,
+  }) : super(key: key, listenable: fadeSliderAnimation);
 
   Widget build(BuildContext context) {
-    final Animation<double> animation = listenable;
+    final Animation<double> fadeSliderAnimation = listenable;
 
     return FadeSliderTransition(
-      animation: animation,
+      animation: fadeSliderAnimation,
       child: AppBar(
         title: Text(
           story.title,
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen),
-            onPressed: toggleFullScreen,
+            icon: AnimatedBuilder(
+              animation: fullscreenController,
+              builder: (context, child) => Icon(
+                    fullscreenController.isCompleted
+                        ? Icons.fullscreen_exit
+                        : Icons.fullscreen,
+                  ),
+            ),
+            onPressed: () {
+              if (fullscreenController.isDismissed) {
+                fullscreenController.forward();
+              } else {
+                fullscreenController.reverse();
+              }
+            },
           ),
         ],
         backgroundColor: Colors.black45,
