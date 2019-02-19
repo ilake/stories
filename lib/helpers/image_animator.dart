@@ -21,7 +21,7 @@ class MyCustomPainter extends CustomPainter {
     Rect viewRect = Offset.zero & size;
 
     if (size != this.size && image != null) {
-      print('new size $size');
+      // print('new size $size');
       this.size = size;
 
       imageRect =
@@ -42,7 +42,7 @@ class MyCustomPainter extends CustomPainter {
       // }
 
       canvas.clipRect(viewRect);
-      print('dstAnim.value ${dstAnim.value}');
+      // print('dstAnim.value ${dstAnim.value}');
       canvas.drawImageRect(image, imageRect, dstAnim.value, p);
     }
   }
