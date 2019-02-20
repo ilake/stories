@@ -130,12 +130,10 @@ class FadeSliderTransition extends StatelessWidget {
     return FadeTransition(
       opacity: animation,
       child: SlideTransition(
-        position: animation.drive(
-          Tween<Offset>(
-            begin: const Offset(0, -1), // Slightly down.
-            end: Offset.zero,
-          ),
-        ),
+        position: Tween<Offset>(
+          begin: Offset(0, -1), // Slightly down.
+          end: Offset.zero,
+        ).animate(animation),
         child: child,
       ),
     );
