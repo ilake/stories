@@ -3,9 +3,10 @@ import "dart:convert";
 import 'package:flutter/material.dart';
 import "package:http/http.dart" as http;
 
-import "./widgets/story_card.dart";
-import "./models/story.dart";
-import "./pages/story_page.dart";
+import "package:stories/widgets/story_card.dart";
+import "package:stories/models/home.dart";
+import "package:stories/models/serializers.dart";
+import "package:stories/pages/story_page.dart";
 
 void main() => runApp(StoriesApp());
 
@@ -60,36 +61,16 @@ class _StoriesPageState extends State<StoriesPage> {
 
   Future<void> _fetchStories() async {
     http.Response response =
-        await http.get("https://stories-4ea69.firebaseio.com/stories.json");
-    final Map<String, dynamic> storiesData = json.decode(response.body);
+        await http.get("https://stories-4ea69.firebaseio.com/home.json");
+    Home home = serializers.deserializeWith(
+        Home.serializer, json.decode(response.body));
 
-    List<StoryCard> storyCardList = [];
+    storyList = home.stories.toList()
+      ..where((Story story) => story.public)
+      ..sort((a, b) => a.position.compareTo(b.position));
 
-    storiesData.forEach((String storyId, dynamic storyData) {
-      final List<Page> pageList = storyData["pages"].map<Page>((dynamic page) {
-        return Page(
-          url: page["url"],
-          number: page["number"],
-        );
-      }).toList();
-      pageList.sort((a, b) => a.number.compareTo(b.number));
-      final Story story = Story(
-        id: storyId,
-        public: storyData["public"],
-        position: storyData["position"],
-        title: storyData["title"],
-        pages: pageList,
-      );
-      final storyCard = StoryCard(story);
-
-      storyCardList.add(storyCard);
-      storyList.add(story);
-    });
-
-    storyCardList =
-        storyCardList.where((StoryCard card) => card.story.public).toList();
-
-    storyCardList.sort((a, b) => a.story.position.compareTo(b.story.position));
+    List<StoryCard> storyCardList =
+        storyList.map((Story story) => StoryCard(story)).toList();
 
     setState(() {
       storyCards = storyCardList;

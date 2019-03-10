@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:cached_network_image/cached_network_image.dart';
 
-import "../models/story.dart";
+import "package:stories/models/home.dart";
 import "../helpers/image_animator.dart";
 
 class StoryPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
 
     _tabController = TabController(
       vsync: this,
-      length: widget.story.pages.length,
+      length: widget.story.sortPages.length,
     )..addListener(_handleTabSelection);
 
     _fadeSliderController = AnimationController(
@@ -48,7 +48,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   void _handleTabSelection() {
-    if (_tabController.index == widget.story.pages.length - 1) {
+    if (_tabController.index == widget.story.sortPages.length - 1) {
       _fadeSliderController.forward();
     } else {
       _fadeSliderController.reverse();
@@ -80,7 +80,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   List<Widget> _buildPages(BuildContext context) {
-    return widget.story.pages.map<Widget>(
+    return widget.story.sortPages.map<Widget>(
       (Page page) {
         return GestureDetector(
           onTap: () {

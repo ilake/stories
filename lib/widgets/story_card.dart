@@ -1,7 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:cached_network_image/cached_network_image.dart';
 
-import "../models/story.dart";
+import "package:stories/models/home.dart";
 
 class StoryCard extends StatelessWidget {
   final Story story;
@@ -16,7 +16,7 @@ class StoryCard extends StatelessWidget {
         footer: GridTileBar(
           backgroundColor: Colors.white54,
           title: Text(
-            story.title,
+            "[${story.status}]${story.title}",
             style: TextStyle(
               fontSize: 24.0,
               fontWeight: FontWeight.bold,
