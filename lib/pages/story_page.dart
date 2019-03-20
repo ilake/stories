@@ -16,7 +16,7 @@ class StoryPage extends StatefulWidget {
 }
 
 class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
-  TabController _tabController;
+  PageController _pageController;
   AnimationController _fadeSliderController;
   AnimationController _fullscreenController;
   Animation<double> _fadeSliderAnimation;
@@ -25,10 +25,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   void initState() {
     super.initState();
 
-    _tabController = TabController(
-      vsync: this,
-      length: widget.story.sortPages.length,
-    )..addListener(_handleTabSelection);
+    _pageController = PageController()..addListener(_handleTabSelection);
 
     _fadeSliderController = AnimationController(
       duration: Duration(milliseconds: 400),
@@ -48,7 +45,7 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   }
 
   void _handleTabSelection() {
-    if (_tabController.index == widget.story.sortPages.length - 1) {
+    if (_pageController.page == widget.story.sortPages.length - 1) {
       _fadeSliderController.forward();
     } else {
       _fadeSliderController.reverse();
@@ -111,8 +108,8 @@ class _StoryPageState extends State<StoryPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: TabBarView(
-        controller: _tabController,
+      body: PageView(
+        controller: _pageController,
         children: _buildPages(context),
       ),
     );
