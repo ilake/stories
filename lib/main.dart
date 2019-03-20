@@ -72,9 +72,11 @@ class _StoriesPageState extends State<StoriesPage> {
     List<StoryCard> storyCardList =
         storyList.map((Story story) => StoryCard(story)).toList();
 
-    setState(() {
-      storyCards = storyCardList;
-    });
+    if (mounted) {
+      setState(() {
+        storyCards = storyCardList;
+      });
+    }
   }
 
   @override
