@@ -32,10 +32,10 @@ class StoryCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(18.0),
             child: CachedNetworkImage(
               imageUrl: story.coverUrl,
-              placeholder: Center(
+              placeholder: (context, url) => Center(
                 child: CircularProgressIndicator(),
               ),
-              errorWidget: Icon(Icons.error),
+              errorWidget: (context, url, error) => Icon(Icons.error),
               fit: BoxFit.cover,
             ),
           ),
