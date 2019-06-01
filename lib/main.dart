@@ -39,6 +39,7 @@ class StoriesApp extends StatelessWidget {
             return StoryPage(story);
           });
         }
+        return null;
       },
     );
   }
