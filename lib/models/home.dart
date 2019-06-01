@@ -28,8 +28,8 @@ abstract class Story implements Built<Story, StoryBuilder> {
   }
 
   List<Page> get sortPages {
-    pages.toList().sort((a, b) => a.number.compareTo(b.number));
-    return pages.toList();
+    return pages.toList()
+      ..sort((a, b) => a.number.compareTo(b.number));
   }
 
   Story._();
